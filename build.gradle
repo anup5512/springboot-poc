@@ -4,7 +4,6 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
-apply plugin: 'java'
 apply plugin: 'application'
 
 group = 'in.co.madguy'
@@ -21,12 +20,11 @@ ext {
     set('springCloudVersion', 'Greenwich.RELEASE')
 }
 
-/*configurations {
-    implementation {
-        exclude group:'com.fasterxml.jackson.databind'
-        exclude group:'com.fasterxml.jackson.core'
+configurations {
+    testImplementation {
+        exclude module: 'junit-dep'
     }
-}*/
+}
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
@@ -41,10 +39,16 @@ dependencies {
     implementation 'io.springfox:springfox-swagger2:2.9.2'
     implementation 'io.springfox:springfox-swagger-ui:2.9.2'
     implementation 'io.github.openfeign:feign-gson:10.2.0'
+    implementation 'io.projectreactor:reactor-core:3.2.6.RELEASE'
     //implementation 'io.github.openfeign:feign-ribbon:10.2.0'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation (
+            'com.h2database:h2:1.4.197',
+            'org.spockframework:spock-core:1.2-groovy-2.4',
+            'org.spockframework:spock-spring:1.2-groovy-2.4'
+    )
 }
 
 dependencyManagement {
