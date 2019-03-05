@@ -3,7 +3,7 @@ package in.co.madguy.springbootpoc.model;
 import lombok.Data;
 
 @Data
-public class Contributor {
+public class GithubContributor {
     private String login;
     private String id;
     private String html_url;

@@ -1,6 +1,7 @@
 package in.co.madguy.springbootpoc.controller;
 
-import in.co.madguy.springbootpoc.model.Contributor;
+import in.co.madguy.springbootpoc.model.GithubContributor;
+import in.co.madguy.springbootpoc.model.GithubRepo;
 import in.co.madguy.springbootpoc.service.GithubService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -24,15 +25,28 @@ public class GithubController {
     }
 
     @RequestMapping(
-        value = "/{owner}/{repo}",
+        value = "/repos/{username}",
+        method = RequestMethod.GET
+    )
+    @ApiOperation(
+        value = "Fetches public Github repos of a user",
+        response = GithubRepo.class,
+        responseContainer = "List"
+    )
+    public List<GithubRepo> repos(@PathVariable("username") String username) {
+        return this.githubService.getGithubRepos(username);
+    }
+
+    @RequestMapping(
+        value = "/contributors/{owner}/{repo}",
         method = RequestMethod.GET
     )
     @ApiOperation(
         value = "Fetches Github repo contributor details",
-        response = Contributor.class,
+        response = GithubContributor.class,
         responseContainer = "List"
     )
-    public List<Contributor> contributors(@PathVariable("owner") String owner, @PathVariable("repo") String repo) {
+    public List<GithubContributor> contributors(@PathVariable("owner") String owner, @PathVariable("repo") String repo) {
         return this.githubService.getGithubContributors(owner, repo);
     }
 }
