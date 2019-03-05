@@ -9,6 +9,17 @@
   4.2 Spec - http://localhost:8080/v2/api-docs  
 5. GsonHttpMessageConverter configured
   5.1 SpringfoxJsonToGsonAdapter to convert Springfox Json to Google JsonElement
+  5.2 Also, done using 'spring.gson' application properties
 6. Declarative Feign HTTP Client (provided by Spring Cloud and Netflix)
 
+## TODO
+1. Retry mechanism for failed HTTP requests
+2. Circuit breaker mechanism in case of downstream failure
+3. Persist data in MongoDb
+4. Spock test cases
+5. Flux/Mono implementation
+6. Disruptor implementation
+7. Hazelcast implementation
+8. RabbitMQ interaction
+9. Kafka interaction
 !!!
