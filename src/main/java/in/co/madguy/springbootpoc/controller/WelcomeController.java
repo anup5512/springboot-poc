@@ -1,6 +1,6 @@
 package in.co.madguy.springbootpoc.controller;
 
-import in.co.madguy.springbootpoc.service.WelcomeService;
+import in.co.madguy.springbootpoc.service.impl.WelcomeServiceImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/greet")
 @Api(description = "Operations for proof of concept")
 public class WelcomeController {
-    private final WelcomeService welcomeService;
+    private final WelcomeServiceImpl welcomeService;
 
     @Autowired
-    public WelcomeController(WelcomeService welcomeService) {
+    public WelcomeController(WelcomeServiceImpl welcomeService) {
         this.welcomeService = welcomeService;
     }
 

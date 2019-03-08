@@ -1,4 +1,4 @@
-package in.co.madguy.springbootpoc.model;
+package in.co.madguy.springbootpoc.response.model;
 
 import lombok.Data;
 

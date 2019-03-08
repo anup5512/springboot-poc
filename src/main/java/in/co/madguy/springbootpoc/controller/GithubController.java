@@ -1,8 +1,8 @@
 package in.co.madguy.springbootpoc.controller;
 
-import in.co.madguy.springbootpoc.model.GithubContributor;
-import in.co.madguy.springbootpoc.model.GithubRepo;
-import in.co.madguy.springbootpoc.service.GithubService;
+import in.co.madguy.springbootpoc.response.model.GithubContributor;
+import in.co.madguy.springbootpoc.response.model.GithubRepo;
+import in.co.madguy.springbootpoc.service.impl.GithubServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +17,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/github")
 public class GithubController {
-    private final GithubService githubService;
+    private final GithubServiceImpl githubService;
 
     @Autowired
-    public GithubController(GithubService githubService) {
+    public GithubController(GithubServiceImpl githubService) {
         this.githubService = githubService;
     }
 
