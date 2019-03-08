@@ -11,6 +11,8 @@
   5.1 SpringfoxJsonToGsonAdapter to convert Springfox Json to Google JsonElement
   5.2 Also, done using 'spring.gson' application properties
 6. Declarative Feign HTTP Client (provided by Spring Cloud and Netflix)
+7. Timezone configuration
+8. HTTP request interceptor
 
 ## TODO
 1. Retry mechanism for failed HTTP requests
