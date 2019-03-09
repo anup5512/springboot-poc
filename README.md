@@ -13,8 +13,11 @@
 6. Declarative Feign HTTP Client (provided by Spring Cloud and Netflix)    
 7. Timezone configuration  
 8. HTTP request interceptor  
+9. Guava Cache  
+10. Spring Hateoas  
 
 ## TODO
+0. Exception handling
 1. Retry mechanism for failed HTTP requests  
 2. Circuit breaker mechanism in case of downstream failure  
 3. Persist data in MongoDb  
