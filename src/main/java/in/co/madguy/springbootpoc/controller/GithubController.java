@@ -1,7 +1,7 @@
 package in.co.madguy.springbootpoc.controller;
 
-import in.co.madguy.springbootpoc.response.model.GithubContributor;
-import in.co.madguy.springbootpoc.response.model.GithubRepo;
+import in.co.madguy.springbootpoc.response.dto.GithubContributor;
+import in.co.madguy.springbootpoc.response.dto.GithubRepo;
 import in.co.madguy.springbootpoc.service.impl.GithubServiceImpl;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/github")
 public class GithubController {
     private final GithubServiceImpl githubService;
 
@@ -25,7 +24,7 @@ public class GithubController {
     }
 
     @RequestMapping(
-        value = "/repos/{username}",
+        value = "/github/repos/{username}",
         method = RequestMethod.GET
     )
     @ApiOperation(
@@ -38,7 +37,7 @@ public class GithubController {
     }
 
     @RequestMapping(
-        value = "/contributors/{owner}/{repo}",
+        value = "/github/contributors/{owner}/{repo}",
         method = RequestMethod.GET
     )
     @ApiOperation(

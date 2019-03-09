@@ -1,9 +1,9 @@
-package in.co.madguy.springbootpoc.service;
+package in.co.madguy.springbootpoc.service.feign;
 
 import feign.Param;
 import feign.RequestLine;
-import in.co.madguy.springbootpoc.response.model.GithubContributor;
-import in.co.madguy.springbootpoc.response.model.GithubRepo;
+import in.co.madguy.springbootpoc.response.dto.GithubContributor;
+import in.co.madguy.springbootpoc.response.dto.GithubRepo;
 
 import java.util.List;
 

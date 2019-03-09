@@ -1,11 +1,14 @@
 package in.co.madguy.springbootpoc.configuration;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import in.co.madguy.springbootpoc.request.interceptor.AuthInterceptor;
 import in.co.madguy.springbootpoc.request.interceptor.LoggerInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
@@ -13,6 +16,7 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.json.Json;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -72,14 +76,14 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Using Java Config: Register custom HTTP Message Converters
-        /*Gson gson = new GsonBuilder()
+        Gson gson = new GsonBuilder()
             .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
             .registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter())
             .create();
         GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();
         gsonHttpMessageConverter.setGson(gson);
         converters.add(gsonHttpMessageConverter);
-        super.configureMessageConverters(converters);*/
+        super.configureMessageConverters(converters);
     }
 
     @Override

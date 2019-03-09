@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/greet")
 @Api(description = "Operations for proof of concept")
 public class WelcomeController {
     private final WelcomeServiceImpl welcomeService;
@@ -23,7 +22,7 @@ public class WelcomeController {
     }
 
     @RequestMapping(
-        value = "/",
+        value = "/greet",
         method = RequestMethod.GET
     )
     @ApiOperation(value = "Greets user", response = String.class)
@@ -35,7 +34,7 @@ public class WelcomeController {
     }
 
     @RequestMapping(
-        value = "/{name}",
+        value = "/greet/{name}",
         method = RequestMethod.GET
     )
     @ApiOperation(value = "Greets user by name", response = String.class)

@@ -9,6 +9,7 @@ import java.text.MessageFormat;
 @Service
 public class WelcomeServiceImpl implements WelcomeService {
 
+    @Override
     public String greet(String name) {
         return MessageFormat.format("Hello! {0}...", StringUtils.isBlank(name) ? "User" : name);
     }
