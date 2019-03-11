@@ -2,9 +2,12 @@ package in.co.madguy.springbootpoc.service.impl;
 
 import com.google.common.base.Preconditions;
 import feign.Feign;
+import feign.FeignException;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import in.co.madguy.springbootpoc.cache.UserCache;
+import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
+import in.co.madguy.springbootpoc.exception.ServiceException;
 import in.co.madguy.springbootpoc.model.User;
 import in.co.madguy.springbootpoc.request.dto.CreateUserRequest;
 import in.co.madguy.springbootpoc.response.dto.UserResponse;
@@ -15,7 +18,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,44 +36,45 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String id) {
-        return userCache.get(id);
-    }
-
-    @Override
     public List<User> getAllUsers() {
         return userCache.get();
     }
 
     @Override
-    public User addUser(User user) {
-        UserResponse response = this.userClient.create(CreateUserRequest.from(user));
-        User savedUser = response.getUser();
-        userCache.add(savedUser);
-        return savedUser;
+    public User getUser(String id) throws EntityNotFoundException {
+        User user = userCache.get(id);
+        if (null == user) {
+            throw new EntityNotFoundException(User.class, "userId", id);
+        }
+        return user;
     }
 
     @Override
-    public User modifyUser(User user) {
-        Optional<User> existingUserOpt = Optional.ofNullable(userCache.get(user.getId()));
-        if (existingUserOpt.isPresent()) {
-            User updatedUser = existingUserOpt.get().builder()
-                .name(user.getName())
-                .age(user.getAge())
-                .build();
-            userCache.add(updatedUser);
-            return updatedUser;
+    public User addUser(User user) throws ServiceException {
+        try {
+            UserResponse response = this.userClient.create(CreateUserRequest.from(user));
+            User savedUser = response.getUser();
+            userCache.add(savedUser);
+            return savedUser;
+        } catch (FeignException e) {
+            throw new ServiceException(UserService.class, "status", String.valueOf(e.status()), "message", e.getMessage());
         }
-        throw new RuntimeException("User not found; id- " + user.getId());
     }
 
     @Override
-    public void deleteUser(User user) {
-        Optional<User> existingUserOpt = Optional.ofNullable(userCache.get(user.getId()));
-        if (existingUserOpt.isPresent()) {
-            userCache.remove(existingUserOpt.get());
-            return;
-        }
-        throw new RuntimeException("User not found; id- " + user.getId());
+    public User modifyUser(User user) throws EntityNotFoundException {
+        User existingUser = this.getUser(user.getUserId());
+
+        // UpdateUserRequest request = UpdateUserRequest.from(user);
+        existingUser.setName(user.getName());
+        existingUser.setAge(user.getAge());
+        userCache.add(existingUser);
+        return existingUser;
+    }
+
+    @Override
+    public void deleteUser(String id) throws EntityNotFoundException {
+        User existingUser = this.getUser(id);
+        userCache.remove(existingUser);
     }
 }

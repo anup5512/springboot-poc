@@ -1,22 +1,25 @@
 package in.co.madguy.springbootpoc.controller;
 
+import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
+import in.co.madguy.springbootpoc.exception.ServiceException;
+import in.co.madguy.springbootpoc.mapper.UserMapper;
 import in.co.madguy.springbootpoc.model.User;
 import in.co.madguy.springbootpoc.request.dto.CreateUserRequest;
 import in.co.madguy.springbootpoc.request.dto.UpdateUserRequest;
 import in.co.madguy.springbootpoc.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
+import org.springframework.hateoas.Resources;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -35,42 +38,46 @@ public class UserController {
         value = "/users",
         method = RequestMethod.GET
     )
-    public List<Resource<User>> getUsers() {
+    public Resources<Resource<User>> getUsers() {
         List<User> users = this.userService.getAllUsers();
-        List<Resource<User>> resources = new ArrayList<>();
-        users.forEach(user -> {
-            Resource<User> resource = new Resource<>(user);
-            ControllerLinkBuilder linkToSelf = linkTo(methodOn(this.getClass()).getUser(user.getId()));
-            resource.add(linkToSelf.withRel("self"));
-            resources.add(resource);
-        });
-        return resources;
+        List<Resource<User>> userResources = users.stream()
+            .map(user -> {
+                try {
+                    Link selfRel = linkTo(methodOn(UserController.class).getUser(user.getUserId())).withSelfRel();
+                    return new Resource<>(user, selfRel);
+                } catch (EntityNotFoundException e) {
+                    // Do nothing
+                }
+                return null;
+            }).collect(Collectors.toList());
+
+        Link selfRel = linkTo(methodOn(UserController.class).getUsers()).withSelfRel();
+        return new Resources<>(userResources, selfRel);
     }
 
     @RequestMapping(
         value = "/users/{id}",
         method = RequestMethod.GET
     )
-    public Resource<User> getUser(@PathVariable String id) {
-        Optional<User> user = Optional.ofNullable(this.userService.getUser(id));
-        if (!user.isPresent()) {
-            throw new RuntimeException("User not found; id-" + id);
-        }
-        Resource<User> resource = new Resource<>(user.get());
-        ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getUsers());
-        resource.add(linkTo.withRel("all-users"));
-        return resource;
+    public Resource<User> getUser(@PathVariable String id) throws EntityNotFoundException {
+        User user = this.userService.getUser(id);
+        Link selfRel = linkTo(methodOn(UserController.class).getUser(id)).withSelfRel();
+        Resource<User> userResource = new Resource<>(user, selfRel);
+
+        Link allRel = linkTo(methodOn(UserController.class).getUsers()).withRel("all");
+        userResource.add(allRel);
+        return userResource;
     }
 
     @RequestMapping(
         value = "/users",
         method = RequestMethod.POST
     )
-    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserRequest request) {
-        User user = this.userService.addUser(User.from(request));
+    public ResponseEntity<User> createUser(@Valid @RequestBody CreateUserRequest request) throws ServiceException {
+        User user = this.userService.addUser(UserMapper.from(request));
         URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-            .path("/{id}")
-            .buildAndExpand(user.getId())
+            .path("/{userId}")
+            .buildAndExpand(user.getUserId())
             .toUri();
         return ResponseEntity.created(location).build();
     }
@@ -79,12 +86,17 @@ public class UserController {
         value = "/users/{id}",
         method = RequestMethod.PUT
     )
-    public ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest request, @PathVariable String id) {
-        Optional<User> user = Optional.ofNullable(this.userService.getUser(id));
-        if (!user.isPresent()) {
-            return ResponseEntity.notFound().build();
-        }
-        this.userService.addUser(User.from(request, id));
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest request, @PathVariable String id) throws EntityNotFoundException {
+        this.userService.modifyUser(UserMapper.from(request, id));
+        return ResponseEntity.accepted().build();
+    }
+
+    @RequestMapping(
+        value = "/users/{id}",
+        method = RequestMethod.DELETE
+    )
+    public ResponseEntity<User> deleteUser(@PathVariable String id) throws EntityNotFoundException {
+        this.userService.deleteUser(id);
+        return ResponseEntity.accepted().build();
     }
 }
