@@ -77,7 +77,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Using Java Config: Register custom HTTP Message Converters
         Gson gson = new GsonBuilder()
-            .setDateFormat("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'SSS'Z'")
+            .registerTypeAdapter(LocalDateTimeToGsonAdapter.class, new LocalDateTimeToGsonAdapter())
             .registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter())
             .create();
         GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();

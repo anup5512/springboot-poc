@@ -5,6 +5,7 @@ import feign.Feign;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
 import in.co.madguy.springbootpoc.cache.UserCache;
+import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
 import in.co.madguy.springbootpoc.model.User;
 import in.co.madguy.springbootpoc.request.dto.CreateUserRequest;
 import in.co.madguy.springbootpoc.response.dto.UserResponse;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,12 +34,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUser(String id) {
-        return userCache.get(id);
+    public User getUser(String id) throws EntityNotFoundException {
+        User user = userCache.get(id);
+        if (null == user) {
+            throw new EntityNotFoundException(User.class, "id", id);
+        }
+        return user;
     }
 
     @Override
-    public List<User> getAllUsers() {
+    public List<User> getAllUsers() throws EntityNotFoundException {
         return userCache.get();
     }
 
@@ -52,26 +56,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User modifyUser(User user) {
-        Optional<User> existingUserOpt = Optional.ofNullable(userCache.get(user.getId()));
-        if (existingUserOpt.isPresent()) {
-            User updatedUser = existingUserOpt.get().builder()
-                .name(user.getName())
-                .age(user.getAge())
-                .build();
-            userCache.add(updatedUser);
-            return updatedUser;
+    public User modifyUser(User user) throws  EntityNotFoundException {
+        User existingUser = userCache.get(user.getId());
+        if (null == existingUser) {
+            throw new EntityNotFoundException(User.class, "id", user.getId());
         }
-        throw new RuntimeException("User not found; id- " + user.getId());
+
+        User updatedUser = existingUser.builder()
+            .name(user.getName())
+            .age(user.getAge())
+            .build();
+        userCache.add(updatedUser);
+        return updatedUser;
     }
 
     @Override
-    public void deleteUser(User user) {
-        Optional<User> existingUserOpt = Optional.ofNullable(userCache.get(user.getId()));
-        if (existingUserOpt.isPresent()) {
-            userCache.remove(existingUserOpt.get());
-            return;
+    public void deleteUser(User user) throws EntityNotFoundException {
+        User existingUser = userCache.get(user.getId());
+        if (null == existingUser) {
+            throw new EntityNotFoundException(User.class, "id", user.getId());
         }
-        throw new RuntimeException("User not found; id- " + user.getId());
+        userCache.remove(existingUser);
     }
 }

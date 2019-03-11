@@ -1,5 +1,6 @@
 package in.co.madguy.springbootpoc.controller;
 
+import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
 import in.co.madguy.springbootpoc.model.User;
 import in.co.madguy.springbootpoc.request.dto.CreateUserRequest;
 import in.co.madguy.springbootpoc.request.dto.UpdateUserRequest;
@@ -35,15 +36,15 @@ public class UserController {
         value = "/users",
         method = RequestMethod.GET
     )
-    public List<Resource<User>> getUsers() {
+    public List<Resource<User>> getUsers() throws EntityNotFoundException {
         List<User> users = this.userService.getAllUsers();
         List<Resource<User>> resources = new ArrayList<>();
-        users.forEach(user -> {
+        for (User user : users) {
             Resource<User> resource = new Resource<>(user);
             ControllerLinkBuilder linkToSelf = linkTo(methodOn(this.getClass()).getUser(user.getId()));
             resource.add(linkToSelf.withRel("self"));
             resources.add(resource);
-        });
+        }
         return resources;
     }
 
@@ -51,11 +52,8 @@ public class UserController {
         value = "/users/{id}",
         method = RequestMethod.GET
     )
-    public Resource<User> getUser(@PathVariable String id) {
+    public Resource<User> getUser(@PathVariable String id) throws EntityNotFoundException {
         Optional<User> user = Optional.ofNullable(this.userService.getUser(id));
-        if (!user.isPresent()) {
-            throw new RuntimeException("User not found; id-" + id);
-        }
         Resource<User> resource = new Resource<>(user.get());
         ControllerLinkBuilder linkTo = linkTo(methodOn(this.getClass()).getUsers());
         resource.add(linkTo.withRel("all-users"));
@@ -79,7 +77,7 @@ public class UserController {
         value = "/users/{id}",
         method = RequestMethod.PUT
     )
-    public ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest request, @PathVariable String id) {
+    public ResponseEntity<User> updateUser(@Valid @RequestBody UpdateUserRequest request, @PathVariable String id) throws EntityNotFoundException {
         Optional<User> user = Optional.ofNullable(this.userService.getUser(id));
         if (!user.isPresent()) {
             return ResponseEntity.notFound().build();
