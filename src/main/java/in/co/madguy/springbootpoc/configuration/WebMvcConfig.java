@@ -1,9 +1,8 @@
 package in.co.madguy.springbootpoc.configuration;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import in.co.madguy.springbootpoc.request.interceptor.AuthInterceptor;
 import in.co.madguy.springbootpoc.request.interceptor.LoggerInterceptor;
+import in.co.madguy.springbootpoc.util.GSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,7 +15,6 @@ import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.spi.DocumentationType;
-import springfox.documentation.spring.web.json.Json;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
@@ -76,13 +74,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         // Using Java Config: Register custom HTTP Message Converters
-        Gson gson = new GsonBuilder()
-            .registerTypeAdapter(LocalDateTimeToGsonAdapter.class, new LocalDateTimeToGsonAdapter())
-            .registerTypeAdapter(Json.class, new SpringfoxJsonToGsonAdapter())
-            .create();
-        GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();
-        gsonHttpMessageConverter.setGson(gson);
-        converters.add(gsonHttpMessageConverter);
+        converters.add(getGsonHttpMessageConverter());
         super.configureMessageConverters(converters);
     }
 
@@ -90,5 +82,11 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(this.authInterceptor).addPathPatterns("/github/**");
         registry.addInterceptor(this.loggerInterceptor).addPathPatterns("/**");
+    }
+
+    private GsonHttpMessageConverter getGsonHttpMessageConverter() {
+        GsonHttpMessageConverter gsonHttpMessageConverter = new GsonHttpMessageConverter();
+        gsonHttpMessageConverter.setGson(GSON.gson());
+        return gsonHttpMessageConverter;
     }
 }

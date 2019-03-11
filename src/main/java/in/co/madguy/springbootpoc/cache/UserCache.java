@@ -35,12 +35,12 @@ public class UserCache implements Cache<User> {
 
     @Override
     public void add(User user) {
-        userCache.put(user.getId(), user);
+        userCache.put(user.getUserId(), user);
     }
 
     @Override
     public void remove(User user) {
-        userCache.invalidate(user.getId());
+        userCache.invalidate(user.getUserId());
     }
 
     private void initUserCache() {

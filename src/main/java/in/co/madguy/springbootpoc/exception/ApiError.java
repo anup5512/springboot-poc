@@ -9,7 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 
 import javax.validation.ConstraintViolation;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -18,13 +18,13 @@ import java.util.Set;
 class ApiError {
 
     private HttpStatus status;
-    private LocalDateTime timestamp;
+    private ZonedDateTime timestamp;
     private String message;
     private String debugMessage;
     private List<ApiSubError> subErrors;
 
     private ApiError() {
-        timestamp = LocalDateTime.now();
+        timestamp = ZonedDateTime.now();
     }
 
     ApiError(HttpStatus status) {
