@@ -175,7 +175,7 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Handle Exception, handle generic Exception.class
+     * Handle Exception, handle MethodArgumentTypeMismatchException.class
      *
      * @param ex the Exception
      * @return the ApiError object
@@ -213,6 +213,20 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleServiceException(ServiceException ex) {
         ApiError apiError = new ApiError(SERVICE_UNAVAILABLE);
         apiError.setMessage(ex.getMessage());
+        return buildResponseEntity(apiError);
+    }
+
+    /**
+     * Handle Exception, handle generic Exception.class
+     *
+     * @param ex the Exception
+     * @return the ApiError object
+     */
+    @ExceptionHandler({RuntimeException.class, Exception.class})
+    protected ResponseEntity<Object> handleGenericException(Exception ex) {
+        ApiError apiError = new ApiError(INTERNAL_SERVER_ERROR);
+        apiError.setMessage(String.format("Internal server error"));
+        apiError.setDebugMessage(ex.getMessage());
         return buildResponseEntity(apiError);
     }
 }

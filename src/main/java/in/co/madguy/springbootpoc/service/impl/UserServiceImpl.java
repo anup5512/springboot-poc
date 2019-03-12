@@ -5,7 +5,7 @@ import feign.Feign;
 import feign.FeignException;
 import feign.gson.GsonDecoder;
 import feign.gson.GsonEncoder;
-import in.co.madguy.springbootpoc.cache.UserCache;
+import in.co.madguy.springbootpoc.cache.Cache;
 import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
 import in.co.madguy.springbootpoc.exception.ServiceException;
 import in.co.madguy.springbootpoc.model.User;
@@ -22,11 +22,11 @@ import java.util.List;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-    private final UserCache userCache;
+    private final Cache<User> userCache;
     private final UserClient userClient;
 
     public UserServiceImpl(@Value("${api.user.url}") String url,
-                           UserCache userCache) {
+                           Cache<User> userCache) {
         Preconditions.checkNotNull(url, "User api url is not configured");
         this.userCache = userCache;
         this.userClient = Feign.builder()

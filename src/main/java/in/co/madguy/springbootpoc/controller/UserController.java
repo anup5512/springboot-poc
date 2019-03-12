@@ -9,6 +9,7 @@ import in.co.madguy.springbootpoc.request.dto.UpdateUserRequest;
 import in.co.madguy.springbootpoc.service.UserService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.hateoas.Link;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
@@ -21,6 +22,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static in.co.madguy.springbootpoc.util.Constants.ALL_REL;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
@@ -30,7 +32,7 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(@Qualifier("userServiceImpl") UserService userService) {
         this.userService = userService;
     }
 
@@ -64,7 +66,7 @@ public class UserController {
         Link selfRel = linkTo(methodOn(UserController.class).getUser(id)).withSelfRel();
         Resource<User> userResource = new Resource<>(user, selfRel);
 
-        Link allRel = linkTo(methodOn(UserController.class).getUsers()).withRel("all");
+        Link allRel = linkTo(methodOn(UserController.class).getUsers()).withRel(ALL_REL);
         userResource.add(allRel);
         return userResource;
     }
