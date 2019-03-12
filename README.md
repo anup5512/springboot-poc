@@ -15,9 +15,10 @@
 8. HTTP request interceptor  
 9. Guava Cache  
 10. Spring Hateoas  
+11. API Exception Handling 
 
 ## TODO
-0. Exception handling
+~0. Exception handling~
 1. Retry mechanism for failed HTTP requests  
 2. Circuit breaker mechanism in case of downstream failure  
 3. Persist data in MongoDb  
