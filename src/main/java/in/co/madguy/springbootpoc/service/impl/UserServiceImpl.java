@@ -1,10 +1,7 @@
 package in.co.madguy.springbootpoc.service.impl;
 
 import com.google.common.base.Preconditions;
-import feign.Feign;
 import feign.FeignException;
-import feign.gson.GsonDecoder;
-import feign.gson.GsonEncoder;
 import in.co.madguy.springbootpoc.cache.Cache;
 import in.co.madguy.springbootpoc.exception.EntityNotFoundException;
 import in.co.madguy.springbootpoc.exception.ServiceException;
@@ -29,10 +26,7 @@ public class UserServiceImpl implements UserService {
                            Cache<User> userCache) {
         Preconditions.checkNotNull(url, "User api url is not configured");
         this.userCache = userCache;
-        this.userClient = Feign.builder()
-            .decoder(new GsonDecoder())
-            .encoder(new GsonEncoder())
-            .target(UserClient.class, url);
+        this.userClient = UserClient.init(url);
     }
 
     @Override
@@ -52,7 +46,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User addUser(User user) throws ServiceException {
         try {
-            UserResponse response = this.userClient.create(CreateUserRequest.from(user));
+            UserResponse response = this.userClient.createUser(CreateUserRequest.from(user), "DUMMY_API_KEY");
             User savedUser = response.getUser();
             userCache.add(savedUser);
             return savedUser;

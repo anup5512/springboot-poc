@@ -1,8 +1,5 @@
 package in.co.madguy.springbootpoc.service.impl;
 
-import feign.Feign;
-import feign.gson.GsonDecoder;
-import feign.gson.GsonEncoder;
 import in.co.madguy.springbootpoc.response.dto.GithubContributor;
 import in.co.madguy.springbootpoc.response.dto.GithubRepo;
 import in.co.madguy.springbootpoc.service.GithubService;
@@ -19,10 +16,7 @@ public class GithubServiceImpl implements GithubService {
     private final GithubClient githubClient;
 
     public GithubServiceImpl(@Value("${github.url}") String githubUrl) {
-        this.githubClient = Feign.builder()
-            .decoder(new GsonDecoder())
-            .encoder(new GsonEncoder())
-            .target(GithubClient.class, githubUrl);
+        this.githubClient = GithubClient.init(githubUrl);
     }
 
     @Override
