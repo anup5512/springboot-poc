@@ -16,6 +16,7 @@
 9. Guava Cache  
 10. Spring Hateoas  
 11. API Exception Handling 
+12. JSend compliant response for RESTful APIs 
 
 ## TODO
 ~0. Exception handling~
